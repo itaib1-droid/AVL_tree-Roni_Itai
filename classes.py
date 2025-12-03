@@ -23,16 +23,57 @@ class AVLNode(object):
 		self.right = None
 		self.parent = None
 		self.height = -1
-		
+	
+	def __str__(self):
+		# print the node's fields
+		return (f"Key: {self.key}, value: {self.value}, Height: {self.height}, " \
+			f"Left: {self.left.key if self.left else "virt"}, " \
+			f"Right: {self.right.key if self.right else "virt"}, "\
+            f"Parent: {self.parent.key if self.right else "virt"}")
+	
+	"""returns whether self is a leaf (real node with no children)
+	@rtype: bool
+	@returns: True if self is a leaf, False otherwise.
+	"""
+	def is_leaf(self):
+		if self.is_real_node() and not self.right.is_real_node() and not self.left.is_real_node():
+			return True
+		return False
+
 
 	"""returns whether self is not a virtual node 
-
 	@rtype: bool
 	@returns: False if self is a virtual node, True otherwise.
 	"""
 	def is_real_node(self):
-		return False
+		return self.key is not None and self.value is not None
 
+	"""updates the node's height
+	@pre: self.is_real_node() == True
+	"""
+	def update_height(self):
+		self.height = max(self.left.height, self.right.height) + 1
+
+
+	"""returns the height difference between the current node and its children
+	@pre: node is a real node
+	@rtype: (int, int)
+	"""
+	def height_dif(self):
+		return (self.height - self.left.height, self.height - self.right.height)
+	
+	"""returns the height difference between the two children 
+
+	@pre: self.is_real_node() == True
+	@rtype: int
+	@returns: an int in range(-1, 1)
+	"""
+	def balance_factor(self):
+		if self.is_leaf():
+			return 0
+		return self.left.height - self.right.height 
+
+	############################################################################
 
 """
 A class implementing an AVL tree.
