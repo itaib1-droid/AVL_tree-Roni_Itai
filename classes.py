@@ -5,7 +5,6 @@
 #name2: Itai Ben Shahar
 #username2: itaib1
 
-
 """A class represnting a node in an AVL tree"""
 
 class AVLNode(object):
@@ -80,9 +79,9 @@ class AVLNode(object):
 
 		return tree
 
-	############################################################################
+	#########################################################################
 	''' /* note : 1 more func used by them */ '''
-	############################################################################
+	#########################################################################
 """
 A class implementing an AVL tree.
 """
