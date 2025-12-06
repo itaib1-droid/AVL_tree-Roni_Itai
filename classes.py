@@ -96,7 +96,7 @@ class AVLTree(object):
 		self.max = self.root # pointer to node with max key
 		self.t_size = 0 
 
-	""" help functions """
+	"""------------------ help functions ------------------"""
 
 	"""returns the number of items in dictionary 
 
@@ -169,6 +169,73 @@ class AVLTree(object):
 				node = node.parent
 			return node.parent if node.parent.is_real_node() else None
 	
+	"""------------------ rebalances and rotations functions------------------ """
+
+	"""rebalancing the tree after inserting a new node so it maintain the AVLTree properties
+    @type node: AVLNode
+    @rtype: int
+    @returns: an int indicating the number of promotes
+    """
+	def rebalance_insertion(self, node):
+		return
+	"""rotates the sub-tree a single rotation right to keep form of an AVLtree
+    @type node: AVLNode
+    @returns: None
+    """
+	def single_rotation_right_ins(self, node):
+		return
+	"""rotates the sub-tree a single rotation left to keep form of an AVLtree
+    @type node: AVLNode
+    @returns: None
+    """
+	def single_rotation_left_ins(self, node):
+		return
+	"""rotates the sub-tree a double rotation right to keep form of an AVLtree
+    @type node: AVLNode
+    @returns: None
+    """
+	def double_rotation_right_ins(self, node):
+		return
+	"""rotates the sub-tree a double rotation left to keep form of an AVLtree
+    @type node: AVLNode
+    @returns: None
+    """
+	def double_rotation_left_ins(self, node):
+		return
+
+	"""rebalancing the the tree after deletion a node so it maintain the AVLTree properties
+    @type node: AVLNode
+    """
+	def rebalance_deletion(self, node):
+		return
+
+	"""rotates the sub-tree a single rotation left to keep form of an AVLtree
+    @type node: AVLNode
+    @returns: None
+    """
+	def single_rotation_left_del(self, node):
+		return
+	"""rotates the sub-tree a single rotation right to keep form of an AVLtree
+	@type node: AVLNode
+	@returns: None
+	"""
+	def single_rotation_right_del(self, node):
+		return
+	"""rotates the sub-tree a double rotation left to keep form of an AVLtree
+	@type node: AVLNode
+	@returns: None
+	"""
+	def double_rotation_left_del(self, node):
+		return
+	"""rotates the sub-tree a double rotation right to keep form of an AVLtree
+	@type node: AVLNode
+	@returns: None
+	"""
+	def double_rotation_right_del(self, node):
+		return
+	
+	
+	"""------------------ main functions ------------------"""
 
 	"""searches for a node in the dictionary corresponding to the key (starting at the root)
         
@@ -232,8 +299,39 @@ class AVLTree(object):
 	and h is the number of PROMOTE cases during the AVL rebalancing
 	"""
 	def insert(self, key, val):
-		return None, -1, -1
+		## update size && create new node
+		self.t_size += 1
+		new_n = AVLNode(key, val)
+		new_n.left = AVLNode(None, None)
+		new_n.right = AVLNode(None, None)
+		new_n.update_height()
+		rt = self.get_root()
+		## empty tree case
+		if rt is None:
+			self.root = new_n
+			self.max = new_n
+			return (new_n, 0, 1)
 
+		## insetion
+		curr = rt
+		edges = 0
+		while curr.is_real_node():
+			edges += 1
+			curr = curr.left if key < curr.key else curr.right
+		curr = curr.parent ## one step back
+		new_n.parent = curr
+		if key < curr.key:
+			curr.left = new_n
+		else:
+			curr.right = new_n
+
+		## update max
+		if self.max_node() == None or curr.key >= self.max.key: 
+			self.max = new_n
+		## rebalance
+		promote_count = self.rebalance_insertion(new_node)  
+		return (new_n, edges, promote_count)
+		
 	"""inserts a new node into the dictionary with corresponding key and value, starting at the max
 
 	@type key: int
