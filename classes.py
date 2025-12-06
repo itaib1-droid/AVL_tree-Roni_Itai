@@ -79,9 +79,6 @@ class AVLNode(object):
 
 		return tree
 
-	#########################################################################
-	''' /* note : 1 more func used by them */ '''
-	#########################################################################
 """
 A class implementing an AVL tree.
 """
@@ -234,7 +231,7 @@ class AVLTree(object):
 	def double_rotation_right_del(self, node):
 		return
 	
-	
+
 	"""------------------ main functions ------------------"""
 
 	"""searches for a node in the dictionary corresponding to the key (starting at the root)
