@@ -240,6 +240,8 @@ class AVLTree(object):
 	def delete(self, node):
 		return	
 
+	def change(int bla):
+		return	
 	
 	"""joins self with item and another AVLTree
 
