@@ -169,6 +169,7 @@ class AVLTree(object):
 				node = node.parent
 			return node.parent if node.parent.is_real_node() else None
 	
+
 	"""searches for a node in the dictionary corresponding to the key (starting at the root)
         
 	@type key: int
@@ -233,7 +234,6 @@ class AVLTree(object):
 	def insert(self, key, val):
 		return None, -1, -1
 
-
 	"""inserts a new node into the dictionary with corresponding key and value, starting at the max
 
 	@type key: int
@@ -249,7 +249,6 @@ class AVLTree(object):
 	def finger_insert(self, key, val):
 		return None, -1, -1
 
-
 	"""deletes node from the dictionary
 
 	@type node: AVLNode
@@ -258,7 +257,6 @@ class AVLTree(object):
 	def delete(self, node):
 		return	
 
-	
 	"""joins self with item and another AVLTree
 
 	@type tree2: AVLTree 
@@ -271,9 +269,61 @@ class AVLTree(object):
 	or the opposite way
 	"""
 	def join(self, tree2, key, val):
+		 # initialize variables
+		x = AVLNode(key, val)
+		tall, short = (self, tree2) if self.root.height >= tree2.root.height else (tree2 ,self)
+		h = short.root.height
+		if h == -1: # one of the trees is empty
+			tall.insert(x.key, x.value)
+			self.root = tall.root
+			self.max = tall.max
+			self.t_size = tall.size()
+			return
+		
+		curr = tall.root
+		if short.root.key < key:
+			# short tree has smaller keys
+			while curr.height > h: 
+				curr = curr.left
+			## update pointers
+			x.left = short.root
+			short.root.parent = x
+			origin_par = curr.parent 
+			x.right = curr
+			curr.parent = x
+			origin_par.left = x
+			x.parent = origin_par
+			## update max
+			if tall.max.is_real_node():
+				self.max = tall.max
+			else:
+				self.max = self.root
+		else:
+			# short tree has larger keys
+			while curr.height > h: 
+				curr = curr.right
+			## update pointers
+			x.right = short.root
+			short.root.parent = x
+			origin_par = curr.parent 
+			x.left = curr
+			curr.parent = x
+			origin_par.right = x
+			x.parent = origin_par
+
+			## update max
+			if short.max.is_real_node():
+				self.max = short.max
+			else:
+				self.max = self.root
+
+		## epdate root and size
+		self.root = x if tall.root.height == short.root.height else tall.root
+		self.t_size = tall.size() + short.size() + 1
+
+		self.rebalance_insertion(node)
 		return
-
-
+	
 	"""splits the dictionary at a given node
 
 	@type node: AVLNode
@@ -286,7 +336,7 @@ class AVLTree(object):
 	"""
 	def split(self, node):
 		t_left = node.left.toAVLTree() if node.left.is_real_node() else AVLTree()
-		t_right = node.right.toAVLTree() if node.right.is_real_node() else AVLTree() ## t2
+		t_right = node.right.toAVLTree() if node.right.is_real_node() else AVLTree() 
 
 
 		while node is not self.root:
@@ -307,7 +357,6 @@ class AVLTree(object):
 			
 		return(t_left, t_right)
 
-	
 	"""returns an array representing dictionary 
 
 	@rtype: list
