@@ -149,7 +149,25 @@ class AVLTree(object):
 		while node.right.is_real_node():
 			node = node.right
 		self.max = node
-	
+	"""returns the successor of a given node in the dictionary
+
+	@rtype: AVLNode
+	@returns: the successor of node, None if node is the max
+	"""
+	def succsessor(self,node):
+		## edge case - node is max
+		if node == self.max:
+			return None     
+		if node.right.is_real_node():
+			node = node.right
+			while node.left.is_real_node():
+				node = node.left
+			return node
+		else:
+			## node is right child
+			while node.parent.is_real_node() and node.parent.right == node:
+				node = node.parent
+			return node.parent if node.parent.is_real_node() else None
 	
 	"""searches for a node in the dictionary corresponding to the key (starting at the root)
         
@@ -240,8 +258,6 @@ class AVLTree(object):
 	def delete(self, node):
 		return	
 
-	def change(int bla):
-		return	
 	
 	"""joins self with item and another AVLTree
 
@@ -279,5 +295,3 @@ class AVLTree(object):
 	"""
 	def avl_to_array(self):
 		return None
-
-	
