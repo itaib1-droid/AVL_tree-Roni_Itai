@@ -137,7 +137,7 @@ class AVLTree(object):
 		while node.left.is_real_node():
 			node = node.left
 		return node
-	"""updates the node with the minimal key in the dictionary 
+	"""updates the node with the maximal key in the dictionary 
 	@rtype: AVLNode
 	@returns: -
 	"""
@@ -285,7 +285,27 @@ class AVLTree(object):
 	dictionary larger than node.key.
 	"""
 	def split(self, node):
-		return None, None
+		t_left = node.left.toAVLTree() if node.left.is_real_node() else AVLTree()
+		t_right = node.right.toAVLTree() if node.right.is_real_node() else AVLTree() ## t2
+
+
+		while node is not self.root:
+			par = node.parent
+			curr_t = AVLTree()
+			curr_t.max = AVLNode(None, None)
+			if node == par.left:  
+				## node is left child
+				curr_t.root = par.right
+				t_right.join(curr_t, par.key, par.value)
+			else:
+				## node is right child
+				curr_t.root = par.left
+				t_left.join(curr_t, par.key, par.value)
+
+			t_left.update_max()
+			t_right.update_max()
+			
+		return(t_left, t_right)
 
 	
 	"""returns an array representing dictionary 
@@ -294,4 +314,12 @@ class AVLTree(object):
 	@returns: a sorted list according to key of touples (key, value) representing the data structure
 	"""
 	def avl_to_array(self):
-		return None
+		node = self.min_node()
+		if node is None:
+			return []
+		arr = []
+		while node.is_real_node():
+			arr.append((node.key, node.value))
+			node = self.succsessor(node)
+		return arr
+		
