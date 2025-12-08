@@ -1,6 +1,6 @@
-#id1:
-#name1:
-#username1: check
+#id1: 207334525
+#name1:	Roni Shiri
+#username1: ronishiri
 #id2: 211325287
 #name2: Itai Ben Shahar
 #username2: itaib1
@@ -174,62 +174,308 @@ class AVLTree(object):
     @returns: an int indicating the number of promotes
     """
 	def rebalance_insertion(self, node):
-		return
+		node.update_height()
+        # if it's the root
+		if node is self.get_root():
+			return 1
+		bf = node.parent.balance_factor()
+		if bf == 0: # both children are a single step from the father
+			return 0
+		if abs(bf) == 1:
+			return self.rebalance_insertion(node.parent) + 1
+		else: # abs(bf) == 2 so we rotate
+			curr_bf = node.balance_factor()
+			# determine the type of rotation needed according to the balance factors
+			if bf == 2:
+				if curr_bf > 0:
+					self.single_rotation_right_ins(node) 
+				else:
+					self.double_rotation_right_ins(node) 
+			else:
+				if curr_bf < 0: 
+					self.single_rotation_left_ins(node) 
+				else:
+					self.double_rotation_left_ins(node)
+				return 0
+	
 	"""rotates the sub-tree a single rotation right to keep form of an AVLtree
     @type node: AVLNode
     @returns: None
     """
 	def single_rotation_right_ins(self, node):
-		return
+		## save pointers
+		son = node.right
+		old_par = node.parent
+		node.right = old_par
+		new_par = old_par.parent
+		node.parent = new_par
+		old_par.left = son
+		old_par.parent = node
+		son.parent = old_par
+
+		# updates heights due to rotation
+		old_par.update_height()
+		node.update_height()
+		# updating the root pointer if needed
+		if self.get_root() == old_par:
+			self.root = node
+		# assigning the sub-tree's head pointers
+		elif new_par.key < node.key:
+			new_par.right = node
+		else:
+			new_par.left = node
 	"""rotates the sub-tree a single rotation left to keep form of an AVLtree
     @type node: AVLNode
     @returns: None
     """
 	def single_rotation_left_ins(self, node):
-		return
+		## save pointers
+		son = node.left
+		old_par = node.parent
+		node.left = old_par
+		new_par = old_par.parent
+		node.parent = new_par
+		old_par.right = son
+		old_par.parent = node
+		son.parent = old_par
+		# updates heights due to rotation
+		old_par.update_height()
+		node.update_height()
+		# updating the root pointer if needed
+		if self.get_root() == old_par:
+			self.root = node
+		# assigning the sub-tree's head pointers
+		elif new_par.key < node.key:
+			new_par.right = node
+		else:
+			new_par.left = node
 	"""rotates the sub-tree a double rotation right to keep form of an AVLtree
     @type node: AVLNode
     @returns: None
     """
 	def double_rotation_right_ins(self, node):
-		return
+		#change pointers
+		old_par = node.parent
+		new_grandpar = node.right
+		new_grandpar.parent = old_par.parent
+		# original leaves
+		right_grandson = new_grandpar.right 
+		left_grandson = new_grandpar.left
+		# construction of new right sub-tree
+		new_grandpar.right = old_par
+		old_par.parent = new_grandpar
+		old_par.left = right_grandson
+		# construction of new left sub-tree
+		new_grandpar.left = node
+		right_grandson.parent = old_par
+		left_grandson.parent = node
+		# modifications for originial nodes
+		node.right = left_grandson  
+		node.parent = new_grandpar
+		# updates height due to rotation
+		old_par.update_height()
+		node.update_height()
+		new_grandpar.update_height()
+		# updating the root pointer if needed
+		if self.get_root() == old_par:
+			self.root = new_grandpar
+		# assigning the sub-tree's head pointers
+		elif new_grandpar.parent.key < new_grandpar.key:
+			new_grandpar.parent.right = new_grandpar
+		else:
+			new_grandpar.parent.left = new_grandpar
 	"""rotates the sub-tree a double rotation left to keep form of an AVLtree
     @type node: AVLNode
     @returns: None
     """
 	def double_rotation_left_ins(self, node):
-		return
-
+		# change pointers
+		old_par = node.parent
+		new_grandpar = node.left
+		new_grandpar.parent = old_par.parent
+		# original leaves
+		right_grandson = new_grandpar.right 
+		left_grandson = new_grandpar.left
+		# construction of new left sub-tree
+		new_grandpar.left = old_par
+		old_par.parent = new_grandpar
+		old_par.right = left_grandson
+		# construction of new right sub-tree
+		new_grandpar.right = node
+		left_grandson.parent = old_par
+		right_grandson.parent = node
+		# modifications for originial nodes
+		node.left = right_grandson  
+		node.parent = new_grandpar
+		# updates height due to rotation
+		old_par.update_height()
+		node.update_height()
+		new_grandpar.update_height()
+		# updating the root pointer if needed
+		if self.get_root() == old_par:
+			self.root = new_grandpar
+		# assigning the sub-tree's head pointers
+		elif new_grandpar.parent.key < new_grandpar.key:
+			new_grandpar.parent.right = new_grandpar
+		else:
+			new_grandpar.parent.left = new_grandpar
+    
 	"""rebalancing the the tree after deletion a node so it maintain the AVLTree properties
     @type node: AVLNode
     """
 	def rebalance_deletion(self, node):
-		return
-
+		# edge case of empty tree
+		if not node.is_real_node():
+			return 
+		dif = node.height_dif()
+		## if the node is balanced
+		if (dif == (2, 1)) or (dif==(1, 2)): ## balanced
+			return 
+		elif dif == (2, 2): ## up to parent
+			node.update_height()
+			self.rebalance_deletion(node.parent)
+			return
+		# determine the type of rotation needed according to the balance factors
+		if dif == (3, 1):
+			child_dif = node.right.height_dif() 
+			if child_dif == (1, 1): ## R and L - same hight
+				self.single_rotation_left_del(node)
+			elif child_dif == (2, 1): 
+				self.single_rotation_left_del(node)
+				self.rebalance_deletion(node.parent.parent)
+			else: # child_dif == (1, 2)
+				self.double_rotation_left_del(node)
+				self.rebalance_deletion(node.parent.parent)
+		else: # dif == (1, 3)
+			child_dif = node.left.height_dif()
+			if child_dif == (1, 1):
+				self.single_rotation_right_del(node)
+			elif child_dif == (1, 2):
+				self.single_rotation_right_del(node)
+				self.rebalance_deletion(node.parent.parent)
+			else: # child_dif == (2, 1)
+				self.double_rotation_right_del(node)
+				self.rebalance_deletion(node.parent.parent)
+		return 		
+			
 	"""rotates the sub-tree a single rotation left to keep form of an AVLtree
     @type node: AVLNode
     @returns: None
     """
 	def single_rotation_left_del(self, node):
-		return
+		# establish pointers
+		right_child = node.right
+		left_grandchild = right_child.left
+		# the original sub-tree root's parent
+		right_child.parent = node.parent        
+		if node is not self.root: # address sentinal 
+			if node.parent.key < node.key:
+				node.parent.right = right_child
+			else:
+				node.parent.left = right_child
+		# modify pointers
+		right_child.left = node
+		node.parent = right_child
+		node.right = left_grandchild
+		left_grandchild.parent = node
+		# updating height
+		node.update_height()
+		right_child.update_height()
+		# updating the root pointer if needed
+		if self.get_root() == node:
+			self.root = right_child
 	"""rotates the sub-tree a single rotation right to keep form of an AVLtree
 	@type node: AVLNode
 	@returns: None
 	"""
 	def single_rotation_right_del(self, node):
-		return
+		# establish pointers
+		left_child = node.left
+		right_grandchild = left_child.right
+		# the original sub-tree root's parent
+		left_child.parent = node.parent
+		if node is not self.root: 
+			if node.parent.key < node.key:
+				node.parent.right = left_child
+			else:
+				node.parent.left = left_child
+		# modify pointers
+		left_child.right = node
+		node.parent = left_child
+		node.left = right_grandchild
+		right_grandchild.parent = node
+		# update height
+		node.update_height()
+		left_child.update_height()
+		# updating the root pointer if needed
+		if self.get_root() == node:
+			self.root = left_child
 	"""rotates the sub-tree a double rotation left to keep form of an AVLtree
 	@type node: AVLNode
 	@returns: None
 	"""
 	def double_rotation_left_del(self, node):
-		return
+		# establish pointers
+		y=node.right
+		a=y.left
+		c=a.left
+		d=a.right
+		a.parent = node.parent
+		if node is not self.root: # address sentinal 
+			if node.parent.key < node.key:
+				node.parent.right = a
+			else:
+				node.parent.left = a
+		# establish right sub-tree
+		y.left=d
+		d.parent=y
+		y.parent=a
+		a.right=y
+		# establish left sub-tree
+		node.right=c
+		c.parent=node
+		a.left=node
+		node.parent=a       
+		# update height
+		node.update_height()
+		y.update_height()
+		a.update_height()
+		# updating the root pointer if needed
+		if self.get_root() == node:
+			self.root = a
 	"""rotates the sub-tree a double rotation right to keep form of an AVLtree
 	@type node: AVLNode
 	@returns: None
 	"""
 	def double_rotation_right_del(self, node):
-		return
+		# establish pointers
+		y=node.left
+		a=y.right
+		c=a.right
+		d=a.left
+		a.parent = node.parent
+		if node is not self.root: # address sentinal 
+			if node.parent.key < node.key:
+				node.parent.right = a
+			else:
+				node.parent.left = a
+		# establish left sub-tree
+		y.right=d
+		d.parent=y
+		y.parent=a
+		a.left=y
+		# establish right sub-tree
+		node.left=c
+		c.parent=node
+		a.right=node
+		node.parent=a       
+		# update height
+		node.update_height()
+		y.update_height()
+		a.update_height()
+		# updating the root pointer if needed
+		if self.get_root() == node:
+			self.root = a
 	
 
 	"""------------------ main functions ------------------"""
@@ -326,7 +572,8 @@ class AVLTree(object):
 		if self.max_node() == None or curr.key >= self.max.key: 
 			self.max = new_n
 		## rebalance
-		promote_count = self.rebalance_insertion(new_node)  
+		promote_count = self.rebalance_insertion(new_node)
+
 		return (new_n, edges, promote_count)
 		
 	"""inserts a new node into the dictionary with corresponding key and value, starting at the max
@@ -350,7 +597,65 @@ class AVLTree(object):
 	@pre: node is a real pointer to a node in self
 	"""
 	def delete(self, node):
-		return	
+		# decrease the tree's size by 1
+		self.t_size -= 1
+		# initialize variables
+		prnt = node.parent
+		if node == self.get_root():
+			right_son = True
+		else: ##i'm a right or left child
+			right_son = True if prnt.key < node.key else False
+		# if node has two children
+		if node.right.is_real_node() and node.left.is_real_node():
+			suc = self.successor(node)
+			if right_son:
+				prnt.right = suc
+			else:
+				prnt.left = suc           
+			if node.right != suc: # the sucsessor is not a direct child of node
+				suc.parent.left = suc.right # terminate the original parent of suc from suc 
+				suc.right.parent = suc.parent 
+				suc.right = node.right
+				suc.left.parent = suc.parent
+				node.right.parent = suc 	
+			# replace node's left pointers with its sucsessor             
+			suc.left = node.left
+			node.left.parent = suc    
+			if suc.parent == node:
+				start_balance_node = suc
+			else:
+				start_balance_node = suc.parent
+			suc.parent = prnt
+			if node == self.get_root():
+				self.root = suc 
+			suc.update_height() # suc location changed to be as the deleted node
+		# node has one or less children
+		elif node.right.is_real_node(): # has only a right child
+			if right_son:
+				prnt.right = node.right
+			else:
+				prnt.left = node.right  
+			node.right.parent = prnt
+			start_balance_node = prnt
+			if node == self.get_root():
+				self.root = node.right
+		# node has a left child, or is a leaf
+		else: 
+			if right_son:
+				prnt.right = node.left
+			else:
+				prnt.left = node.left   
+			node.left.parent = prnt
+			start_balance_node = prnt
+			# updating the max and root fields if needed            
+			if node == self.get_root():
+				self.root = node.left
+				self.update_max() # find new max
+			elif node == self.max_node():
+				self.max = prnt
+
+		# rebalancing
+		self.rebalance_deletion(start_balance_node)
 
 	"""joins self with item and another AVLTree
 
@@ -416,7 +721,7 @@ class AVLTree(object):
 		self.root = x if tall.root.height == short.root.height else tall.root
 		self.t_size = tall.size() + short.size() + 1
 
-		self.rebalance_insertion(node)
+		self.rebalance_insertion(x)
 		return
 	
 	"""splits the dictionary at a given node
