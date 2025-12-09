@@ -71,7 +71,7 @@ class AVLNode(object):
 		return self.left.height - self.right.height 
 
 	""" converts the node (and its children) to an AVLTree """
-	def toAVLTree(self):
+	def to_avl_tree(self):
 		tree = AVLTree()
 		tree.root = self
 		curr = self
@@ -519,7 +519,7 @@ class AVLTree(object):
 			node = node.parent
 			edges += 1
 
-		t = node.toAVLTree()
+		t = node.to_avl_tree()
 		if t.root.key == self.root.key:
 			t = self
 		ans = t.search(key)
@@ -735,8 +735,8 @@ class AVLTree(object):
 	dictionary larger than node.key.
 	"""
 	def split(self, node):
-		t_left = node.left.toAVLTree() if node.left.is_real_node() else AVLTree()
-		t_right = node.right.toAVLTree() if node.right.is_real_node() else AVLTree() 
+		t_left = node.left.to_avl_tree() if node.left.is_real_node() else AVLTree()
+		t_right = node.right.to_avl_tree() if node.right.is_real_node() else AVLTree() 
 
 
 		while node is not self.root:
