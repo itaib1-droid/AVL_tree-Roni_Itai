@@ -35,7 +35,7 @@ class AVLNode(object):
 		return (f"Key: {self.key}, value: {self.value}, Height: {self.height}, " \
 			f"Left: {self.left.key if self.left else "virt"}, " \
 			f"Right: {self.right.key if self.right else "virt"}, "\
-            f"Parent: {self.parent.key if self.right else "virt"}")
+            f"Parent: {self.parent.key if self.parent else "virt"}")
 	
 	"""returns whether self is a leaf (real node with no children)
 	@rtype: bool
@@ -608,13 +608,13 @@ class AVLTree(object):
 			self.max = new_node
 			return (new_node, 0, 1)
 		# find insertion point
-		edges = 0      
+		path_count = 0      
 		# climb to the left towards target node's deepest ancestor
 		while node.parent.is_real_node() and node.parent.key > key: 
 			node = node.parent
-			edges += 1
+			path_count += 1
 		while node.is_real_node():
-			edges += 1
+			path_count += 1
 			node = node.right if key > node.key else node.left  
 		node = node.parent
 
@@ -623,37 +623,17 @@ class AVLTree(object):
 			node.left = new_node
 		else:
 			node.right = new_node
-
-		if not node.is_real_node(): # empty tree
-			new_node.parent = self.root
-			self.root = new_node
-			self.max = new_node
-			return (new_node, 0, 1)
-        # find insertion point
-		edges = 0      
-		# climb to the left towards target node's deepest ancestor
-		while node.parent.is_real_node() and node.parent.key > key: 
-			node = node.parent
-			edges += 1
-		while node.is_real_node():
-			edges += 1
-			node = node.right if key > node.key else node.left  
-		node = node.parent
-
-		# insert node
-		if key < node.key:
-			node.left = new_node
-		else:
-			node.right = new_node
-
-		# updating the max node field if needed
-		if self.max_node() == None or new_node.key >= self.max.key: 
-			self.max = new_node
+		
 		new_node.parent = node
+		
+		# updating the max node field if needed
+		if new_node.key >= self.max.key: 
+			self.max = new_node
 
 		# rebalance
 		promote_count = self.rebalance_insertion(new_node)      
-		return (new_node, edges, promote_count)    
+		return (new_node, path_count, promote_count)    
+
 
 	"""deletes node from the dictionary
 
