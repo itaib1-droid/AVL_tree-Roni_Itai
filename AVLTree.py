@@ -42,7 +42,12 @@ class AVLNode(object):
 	@returns: True if self is a leaf, False otherwise.
 	"""
 	def is_leaf(self):
-		if self.is_real_node() and not self.right.is_real_node() and not self.left.is_real_node():
+		me = self.is_real_node()
+		r = self.right.is_real_node()
+		l = self.left.is_real_node()
+		if (not me):
+			return False
+		if (not r) and (not l) and me :
 			return True
 		return False
 
@@ -74,8 +79,8 @@ class AVLNode(object):
 	def to_avl_tree(self):
 		tree = AVLTree()
 		tree.root = self
-		curr = self
-		curr.update_max()
+		# update max pointer
+		tree.update_max()
 
 		return tree
 
@@ -197,6 +202,7 @@ class AVLTree(object):
 				else:
 					self.double_rotation_left_ins(node)
 				return 0
+		return 0
 	
 	"""rotates the sub-tree a single rotation right to keep form of an AVLtree
     @type node: AVLNode
@@ -574,7 +580,7 @@ class AVLTree(object):
 		if self.max_node() == None or new_n.key >= self.max.key: 
 			self.max = new_n
 		## rebalance
-		promote_count = self.rebalance_insertion(new_n)
+		promote_count = self.rebalance_insertion(new_n) ############ should be  "new_n.parent?"    
 
 		return (new_n, edges, promote_count)
 		
@@ -631,9 +637,8 @@ class AVLTree(object):
 			self.max = new_node
 
 		# rebalance
-		promote_count = self.rebalance_insertion(new_node)      
+		promote_count = self.rebalance_insertion(new_node.parent)  ############ should be  "new_n?"    
 		return (new_node, path_count, promote_count)    
-
 
 	"""deletes node from the dictionary
 
