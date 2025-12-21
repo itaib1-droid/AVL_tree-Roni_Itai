@@ -1,0 +1,4 @@
+full name1 : איתי בן שחר , itai ben shahar
+full name2 : רוני שירי, roni shiri
+id1 : 211325287
+id2 : 207334525
