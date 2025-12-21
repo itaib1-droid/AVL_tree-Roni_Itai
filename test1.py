@@ -110,7 +110,7 @@ def test_balancing_ascending():
     
     results = []
     for i in range(1, 11):
-        n = 300 * (2 ** i)
+        n = 111 * (2 ** i)
         result = measure_balancing_cost('ascending', n)
         results.append(result)
     
@@ -135,7 +135,7 @@ def test_balancing_descending():
     
     results = []
     for i in range(1, 11):
-        n = 300 * (2 ** i)
+        n = 111 * (2 ** i)
         result = measure_balancing_cost('descending', n)
         results.append(result)
     
@@ -160,7 +160,7 @@ def test_balancing_random():
     
     results = []
     for i in range(1, 11):
-        n = 300 * (2 ** i)
+        n = 111 * (2 ** i)
         result = measure_balancing_cost('random', n)
         results.append(result)
     
@@ -185,7 +185,7 @@ def test_balancing_partially_shuffled():
     
     results = []
     for i in range(1, 11):
-        n = 300 * (2 ** i)
+        n = 111 * (2 ** i)
         result = measure_balancing_cost('partially_shuffled', n)
         results.append(result)
     

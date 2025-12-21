@@ -331,8 +331,8 @@ class AVLTree(object):
     """
 	def rebalance_deletion(self, node):
 		# edge case of empty tree
-		if not node.is_real_node():
-			return 
+		if node is self.get_root() or not node.is_real_node():
+			return
 		dif = node.height_dif()
 		## if the node is balanced
 		if (dif == (2, 1)) or (dif==(1, 2)): ## balanced
@@ -501,9 +501,9 @@ class AVLTree(object):
 			if node.key == key:
 				return node, edges
 			elif key < node.key:
-				node = node.left if node.left.is_real_node() else None
+				node = node.left if node.left.is_real_node() else AVLNode(None, None)
 			else:
-				node = node.right if node.right.is_real_node() else None
+				node = node.right if node.right.is_real_node() else AVLNode(None, None)
 			edges += 1
 		return None, -1
 
@@ -518,10 +518,10 @@ class AVLTree(object):
 	def finger_search(self, key):
 		node = self.max_node()
 		edges = 0
-		if node is None:
+		if node is None or node.key < key:
 			return None
 		##up the tree
-		while node.parent.is_real_node() and node.key > node.parent.key: 
+		while node.parent is not None and node.parent.is_real_node() and node.key > node.parent.key:
 			node = node.parent
 			edges += 1
 
@@ -637,7 +637,7 @@ class AVLTree(object):
 			self.max = new_node
 
 		# rebalance
-		promote_count = self.rebalance_insertion(new_node.parent)  ############ should be  "new_n?"    
+		promote_count = self.rebalance_insertion(new_node)  ############ should be  "new_n?"
 		return (new_node, path_count, promote_count)    
 
 	"""deletes node from the dictionary
@@ -819,8 +819,9 @@ class AVLTree(object):
 		if node is None:
 			return []
 		arr = []
-		while node.is_real_node():
+		while node is not self.max:
 			arr.append((node.key, node.value))
 			node = self.successor(node)
+		arr.append((node.key, node.value))
 		return arr
 		
